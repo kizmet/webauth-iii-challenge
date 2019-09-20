@@ -1,6 +1,6 @@
 import React from "react";
 import { Layout, Form, Menu, Dropdown, Icon } from "antd";
-import { Route, Switch, Link } from "react-router-dom";
+import { Route, Switch, Link, Redirect } from "react-router-dom";
 import "./App.css";
 import NormalLoginForm from "./NormalLoginForm";
 import RegistrationForm from "./RegistrationForm";
@@ -17,13 +17,13 @@ const req = axios.create({
 	baseURL: "http://localhost:8641/"
 });
 
-const axiosGet = async () => {
-	const getLogout = await req.get("api/logout");
-	console.log(getLogout);
+const axiosGet = async cb => {
+	await localStorage.removeItem("token");
+	setTimeout(cb, 100);
 };
 
 const onClick = ({ key }) => {
-	axiosGet();
+	axiosGet(() => <Redirect to="/" />);
 };
 
 const menu = (
@@ -45,12 +45,12 @@ const menu = (
 	</Menu>
 );
 
-const App = () => {
+const App = ({ history }) => {
 	const { Footer, Content, Header } = Layout;
 	return (
 		<Layout style={{ padding: 24 }}>
 			<Header>
-				<Dropdown overlay={menu}>
+				<Dropdown overlay={menu} history={history}>
 					<a className="ant-dropdown-link" href="#">
 						Menu Options <Icon type="down" />
 					</a>
